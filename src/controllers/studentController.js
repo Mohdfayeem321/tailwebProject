@@ -2,7 +2,10 @@ const studentModel = require("../models/studentModel");
 
 const userModel = require("../models/userModel");
 
-const validator = require("../validator/validator")
+const validator = require("../validator/validator");
+
+
+//===================================== Create Students ==============================//
 
 const createStudent = async function (req, res) {
     try {
@@ -49,9 +52,9 @@ const createStudent = async function (req, res) {
         else {
             let existMarks = checkStudent.marks;
             let newMarks = existMarks + marks;
-            let updateMarks = await studentModel.findOneAndUpdate({ name: name, subject: subject, userId:userId }, { $set: { marks: newMarks } }, { new: true });
+            let updateMarks = await studentModel.findOneAndUpdate({ name: name, subject: subject, userId: userId }, { $set: { marks: newMarks } }, { new: true });
 
-            if(!updateMarks) return res.status(400).send({ status: false, message: "student already exist but you are not authorised to update thier marks" })
+            if (!updateMarks) return res.status(400).send({ status: false, message: "student already exist but you are not authorised to update thier marks" })
             return res.status(200).send({ status: true, data: updateMarks });
         }
 
@@ -60,6 +63,8 @@ const createStudent = async function (req, res) {
         return res.status(500).send({ status: false, error: error.message })
     }
 }
+
+//=================================== Get Students ==================================== //
 
 const getStudent = async function (req, res) {
     try {
@@ -97,6 +102,8 @@ const getStudent = async function (req, res) {
 
 }
 
+
+//======================================= Update Students ==========================//
 
 const updateStudent = async function (req, res) {
 
@@ -153,7 +160,7 @@ const updateStudent = async function (req, res) {
 
         if (!updateStudent) return res.status(404).send({ status: false, data: "there is no data found to update! Please check userId or studentId, or maybe it deleted" })
 
-        return res.status(200).send({ status: true, message:"updated successfully", data: updateStudent })
+        return res.status(200).send({ status: true, message: "updated successfully", data: updateStudent })
 
     } catch (error) {
         return res.status(500).send({ status: false, error: error.message })
@@ -161,38 +168,41 @@ const updateStudent = async function (req, res) {
 
 }
 
+//================================= Delete students ================================//
 
 const deleteStudent = async function (req, res) {
 
-    let data = req.body;
+    try {
 
-    let userId = req.params.userId;
+        let data = req.body;
 
-    let { name, studentId, ...rest } = data;
+        let userId = req.params.userId;
 
-    let obj = {};
+        let { studentId, ...rest } = data;
 
-    let restLen = Object.keys(rest);
+        let obj = {};
 
-    if (restLen.length > 0) return res.status(400).send({ status: false, message: "please put name or studentId to delete details" })
+        let restLen = Object.keys(rest);
 
-    if (name) {
-        obj["name"] = name;
-    }
+        if (restLen.length > 0) return res.status(400).send({ status: false, message: "please put name or studentId to delete details" })
 
-    if (studentId) {
         obj["_id"] = studentId;
-    };
 
-    obj["userId"] = userId;
+        obj["userId"] = userId;
 
-    obj["isDeleted"] = false;
+        obj["isDeleted"] = false;
 
-    let deleted = await studentModel.findOneAndUpdate(obj, { isDeleted: true, deletedAt: Date.now() }, { new: true });
+        let deleted = await studentModel.findOneAndUpdate(obj, { isDeleted: true, deletedAt: Date.now() }, { new: true });
 
-    if (!deleted) { return res.status(404).send({ status: false, message: "student is not found or Already Deleted!" }) }
+        if (!deleted) { return res.status(404).send({ status: false, message: "student is not found or Already Deleted!" }) }
 
-    return res.status(200).send({ status: true, message: "student details Successfully Deleted." })
+
+        return res.status(200).send({ status: true, message: "student details Successfully Deleted." })
+
+    } catch (error) {
+        return res.status(500).send({ status: false, error: error.message })
+    }
 }
+
 
 module.exports = { createStudent, getStudent, updateStudent, deleteStudent }

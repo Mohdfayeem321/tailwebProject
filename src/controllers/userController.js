@@ -8,6 +8,8 @@ const bcrypt = require("bcrypt");
 
 const saltRounds = 10;
 
+// ============================ Creating User ======================================= //
+
 const createUser = async function (req, res) {
     try {
 
@@ -49,6 +51,9 @@ const createUser = async function (req, res) {
         return res.status(500).send({ status: false, error: error.message })
     }
 }
+
+
+//=================================== User Login ===================================//
 
 const userLogin = async function (req, res) {
     try {

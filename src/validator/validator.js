@@ -14,7 +14,6 @@ const isValidBody = function (value) {
     return true
 }
 
-
 const isValidUserName = (value) => { return (/^(?=[a-zA-Z0-9._]{8,20}$)(?!.*[_.]{2})[^_.].*[^_.]$/).test(value); }
 
 const checkInputsPresent = (value) => { return (Object.keys(value).length > 0); }
